@@ -1,7 +1,7 @@
 # mirror-mirror
 a serious series of tubes
 
-![](https://raw.github.com/punted/mirror-mirror/master/assets/mirror.svg =200x)
+![](https://taky.s3.amazonaws.com/81gm232x02ou.svg =200x)
 
 # install
 
@@ -9,13 +9,34 @@ using [npm](https://npmjs.org)
 
 ```
 npm i mirror-mirror --save
-sudo npm i mirror-mirror -g
 ```
 
 # example
 
 ``` coffeescript
+mirror = require 'mirror-mirror'
 
+proxy_man = new mirror.ProxyManager({
+	hosts: {
+		'localhost': {
+			host: 'stackoverflow.com'
+			script: """
+				<script>alert('stackoverflow')</script>
+			"""
+		}
+		'proxy.com': {
+			host: 'greatist.com'
+			script: """
+				<script>alert('greatist.com')</script>
+			"""
+		}
+	}
+})
+
+await proxy_man.setup defer()
+
+proxy_man.listen 7777
+log ":7777"
 ```
 
 
