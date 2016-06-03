@@ -1,7 +1,7 @@
 # mirror-mirror
 a serious series of tubes
 
-<img src="https://taky.s3.amazonaws.com/81gm232x02ou.svg">
+<img src="https://taky.s3.amazonaws.com/81gm232x02ou.svg" height="100">
 
 # install
 
