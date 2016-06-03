@@ -3,15 +3,14 @@ a serious series of tubes
 
 <img src="https://taky.s3.amazonaws.com/81gm232x02ou.svg" height="225">
 
-# install
-
-using [npm](https://npmjs.org)
+# usage
 
 ```
-npm i mirror-mirror --save
+git clone https://github.com/punted/mirror-mirror
+cd mirror-mirror
+npm i
+node test.js
 ```
-
-# example
 
 ``` javascript
 var mirror, server;
@@ -37,4 +36,6 @@ server.setup(function() {
 });
 ```
 
+## mirror.ProxyManager
+## mirror.Proxy
 
