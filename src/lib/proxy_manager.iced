@@ -12,7 +12,7 @@ httpProxy = require 'http-proxy'
 
 Proxy = require './proxy'
 
-class ProxyManager
+module.exports = class ProxyManager extends (require('events').EventEmitter)
 
   hosts: {}
   servers: {}
@@ -20,9 +20,7 @@ class ProxyManager
   constructor: (@opt={}) ->
     @opt.port ?= 7777
     @hosts = @opt.hosts ? {}
-
-  refresh_hosts: (hosts) ->
-    @hosts = hosts
+    @opt.middleware = []
 
   setup: (cb) ->
     @http_proxy = httpProxy.createProxyServer({
@@ -34,13 +32,22 @@ class ProxyManager
     })
 
     app = connect()
+
     app.use ((req,res,next) =>
       host = req.hostname ? req.headers?.host ? req.host ? no
+
+      if !host
+        @emit 'error', new Error("Host unparsable")
+        return res.end(null,500)
 
       if host.includes(':')
         host = host.split(':').shift()
 
+      req.proxy_host = host
+      @emit 'request', req
+
       if !(host_item = @hosts[host])
+        @emit 'request_ignored', req
         return res.end "Forbidden", 403
 
       if !@servers[host]
@@ -50,10 +57,17 @@ class ProxyManager
         target: 'http://127.0.0.1:' + @servers[host].port
       }
 
+      @emit 'request_delivered', req
       @http_proxy.web(req,res,request_opts)
     )
 
+    if @opt.middleware.length
+      for x in @opt.middleware
+        app.use x
+
     @http = http.createServer(app)
+
+    @emit 'ready'
     return cb null, yes
 
   setup_proxy: (host,opt,cb) ->
@@ -62,12 +76,15 @@ class ProxyManager
     await p.setup defer()
     p.listen()
 
-    return cb null, p.port
+    @emit 'server_spawned', {host:host,port:p.port,options:opt}
+
+    _.in '3 seconds', ->
+      return cb null, p.port
 
   listen: ->
     @http.listen @opt.port
 
-###
+##
 if !module.parent
   proxy_man = new ProxyManager({
     hosts: {
@@ -86,9 +103,12 @@ if !module.parent
     }
   })
 
+  proxy_man.on 'ready', ->
+    log 'proxy_man_ready'
+
   await proxy_man.setup defer()
 
   proxy_man.listen 7777
   log ":7777"
-###
+##
 
