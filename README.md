@@ -13,27 +13,28 @@ npm i mirror-mirror --save
 
 # example
 
-``` coffeescript
-server = new mirror.ProxyManager({
-	hosts: {
-		'localhost': {
-			host: 'stackoverflow.com'
-			script: """
-				<script>alert(1)</script>
-			"""
-		}
-		'proxy.com': {
-			host: 'greatist.com'
-			script: """
-				<script>alert(2)</script>
-			"""
-		}
-	}
-})
+``` javascript
+var mirror, server;
 
-server.setup ->
-  server.listen 7777
-  console.log ":7777"
+mirror = require('./');
+
+server = new mirror.ProxyManager({
+  hosts: {
+    'localhost': {
+      host: 'stackoverflow.com',
+      script: "<script>alert(1)</script>"
+    },
+    'proxy.com': {
+      host: 'greatist.com',
+      script: "<script>alert(2)</script>"
+    }
+  }
+});
+
+server.setup(function() {
+  server.listen(7777);
+  return console.log(":7777");
+});
 ```
 
 
