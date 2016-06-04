@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "main": "./build/module.js",
   "author": "douglas lauer <taky@taky.com>",
-  "repository": "punted/mirror-mirror",
+  "repository": "tosadvisor/mirror-mirror",
   "keywords": [
     "taky",
     "mitm",
