@@ -1,9 +1,11 @@
 <img src="https://taky.s3.amazonaws.com/31gm6glfzxkf.svg" height="225">
 
-_Magic mirror on the wall, who is the fairest one of all?_
-
 # mirror-mirror
-a serious series of tubes
+`mirror-mirror` is a webserver project designed to reverse proxy and "mitm"
+multiple sites. put it behind nginx and inject custom connect middleware into 
+the proxy manager or specific proxy children using config options.
+
+_magic mirror on the wall, who is the fairest one of all?_
 
 # quick start
 
@@ -13,6 +15,8 @@ cd mirror-mirror
 npm i
 node usage.js
 ```
+
+optionally for demo purposes, `echo "127.0.0.1 proxy.com" >> /etc/hosts`
 
 open browser to `http://localhost:7777`
 
