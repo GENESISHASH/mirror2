@@ -262,12 +262,13 @@
         }
       }
       app.use(((function(_this) {
-        return function(req, res) {
+        return function(req, res, next) {
           var request_opts;
           req.headers.host = _this.opt.host;
           request_opts = {
             target: 'http://127.0.0.1:' + _this.opt.proxy_port
           };
+          _this.emit('request_delivered', req);
           return _this.http_proxy.web(req, res, request_opts, function(e) {
             return next(e);
           });
@@ -324,7 +325,7 @@
           filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy.iced"
         });
         p.setup(__iced_deferrals.defer({
-          lineno: 175
+          lineno: 177
         }));
         __iced_deferrals._fulfill();
       });
