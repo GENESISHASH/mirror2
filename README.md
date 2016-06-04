@@ -17,7 +17,9 @@ npm i
 node usage.js
 ```
 
-optionally for demo purposes, `echo "127.0.0.1 proxy.com" >> /etc/hosts`
+optionally for demo purposes
+
+`echo "127.0.0.1 proxy.com" >> /etc/hosts`
 
 open browser to `http://localhost:7777`
 
