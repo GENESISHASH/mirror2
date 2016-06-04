@@ -29,26 +29,33 @@ mirror = require('./');
 
 server = new mirror.ProxyManager({
   hosts: {
+
     'localhost': {
-      // target host
+
+      // remote host to mirror
       host: 'stackoverflow.com',
 
-      // synchronous source modifiers for content-type: text/html
+      // synchronous source modifiers for text/html
       html_modifiers: [
         (function(x) {
           return x.replace('<title>', '<title>(mirror-mirror) ');
         })
       ]
     },
+
     'proxy.com': {
       host: 'greatist.com',
+
+      // html head appendage for text/html
       append_head: "<script>alert('greatist.com')</script>",
+
       html_modifiers: [
         (function(x) {
           return x.replace('<title>', '<title>(mirror-mirror) ');
         })
       ]
     }
+
   }
 });
 
