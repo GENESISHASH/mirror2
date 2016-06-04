@@ -86,68 +86,131 @@
     }
 
     ProxyManager.prototype.setup = function(cb) {
-      var app, x, _i, _len, _ref;
-      this.http_proxy = httpProxy.createProxyServer({
-        ws: true,
-        xfwd: true,
-        autoRewrite: true,
-        hostRewrite: true,
-        protocolRewrite: 'http'
-      });
-      app = connect();
-      app.use(((function(_this) {
-        return function(req, res, next) {
-          var host, host_item, request_opts, ___iced_passed_deferral, __iced_deferrals, __iced_k, _ref, _ref1, _ref2, _ref3;
-          __iced_k = __iced_k_noop;
-          ___iced_passed_deferral = iced.findDeferral(arguments);
-          host = (_ref = (_ref1 = (_ref2 = req.hostname) != null ? _ref2 : (_ref3 = req.headers) != null ? _ref3.host : void 0) != null ? _ref1 : req.host) != null ? _ref : false;
-          if (!host) {
-            _this.emit('error', new Error("Host unparsable"));
-            return res.end(null, 500);
+      var app, host, host_item, x, ___iced_passed_deferral, __iced_deferrals, __iced_k;
+      __iced_k = __iced_k_noop;
+      ___iced_passed_deferral = iced.findDeferral(arguments);
+      (function(_this) {
+        return (function(__iced_k) {
+          if (_.size(_this.hosts)) {
+            (function(__iced_k) {
+              var _i, _k, _keys, _ref, _results, _while;
+              _ref = _this.hosts;
+              _keys = (function() {
+                var _results1;
+                _results1 = [];
+                for (_k in _ref) {
+                  _results1.push(_k);
+                }
+                return _results1;
+              })();
+              _i = 0;
+              _while = function(__iced_k) {
+                var _break, _continue, _next;
+                _break = __iced_k;
+                _continue = function() {
+                  return iced.trampoline(function() {
+                    ++_i;
+                    return _while(__iced_k);
+                  });
+                };
+                _next = _continue;
+                if (!(_i < _keys.length)) {
+                  return _break();
+                } else {
+                  host = _keys[_i];
+                  host_item = _ref[host];
+                  (function(__iced_k) {
+                    __iced_deferrals = new iced.Deferrals(__iced_k, {
+                      parent: ___iced_passed_deferral,
+                      filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced",
+                      funcname: "ProxyManager.setup"
+                    });
+                    _this.setup_proxy(host, host_item, __iced_deferrals.defer({
+                      lineno: 27
+                    }));
+                    __iced_deferrals._fulfill();
+                  })(_next);
+                }
+              };
+              _while(__iced_k);
+            })(__iced_k);
+          } else {
+            return __iced_k();
           }
-          if (host.includes(':')) {
-            host = host.split(':').shift();
-          }
-          req.proxy_host = host;
-          _this.emit('request', req);
-          if (!(host_item = _this.hosts[host])) {
-            _this.emit('request_ignored', req);
-            return res.end("Forbidden", 403);
-          }
-          (function(__iced_k) {
-            if (!_this.servers[host]) {
-              (function(__iced_k) {
-                __iced_deferrals = new iced.Deferrals(__iced_k, {
-                  parent: ___iced_passed_deferral,
-                  filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced"
-                });
-                _this.setup_proxy(host, host_item, __iced_deferrals.defer({
-                  lineno: 53
-                }));
-                __iced_deferrals._fulfill();
-              })(__iced_k);
-            } else {
-              return __iced_k();
-            }
-          })(function() {
-            request_opts = {
-              target: 'http://127.0.0.1:' + _this.servers[host].port
-            };
-            _this.emit('request_delivered', req);
-            return _this.http_proxy.web(req, res, request_opts);
+        });
+      })(this)((function(_this) {
+        return function() {
+          var _i, _len, _ref, _ref1;
+          _this.http_proxy = httpProxy.createProxyServer({
+            ws: true,
+            xfwd: true,
+            autoRewrite: true,
+            hostRewrite: true,
+            protocolRewrite: 'http'
           });
+          _this.http_proxy.on('error', function(e) {
+            return _this.emit('error', e);
+          });
+          app = connect();
+          if ((_ref = _this.opt.middleware) != null ? _ref.length : void 0) {
+            _ref1 = _this.opt.middleware;
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+              x = _ref1[_i];
+              app.use(x);
+            }
+          }
+          app.use((function(req, res, next) {
+            var host, host_item, request_opts, ___iced_passed_deferral1, __iced_deferrals, __iced_k, _ref2, _ref3, _ref4, _ref5;
+            __iced_k = __iced_k_noop;
+            ___iced_passed_deferral1 = iced.findDeferral(arguments);
+            host = (_ref2 = (_ref3 = (_ref4 = req.hostname) != null ? _ref4 : (_ref5 = req.headers) != null ? _ref5.host : void 0) != null ? _ref3 : req.host) != null ? _ref2 : false;
+            if (!host) {
+              return next(new Error('`host` unparsable'));
+            }
+            if (host.includes(':')) {
+              host = host.split(':').shift();
+            }
+            req.proxy_host = host;
+            _this.emit('request', req);
+            if (!(host_item = _this.hosts[host])) {
+              _this.emit('request_ignored', req);
+              req._code = 403;
+              return next(new Error('Forbidden'));
+            }
+            (function(__iced_k) {
+              if (!_this.servers[host]) {
+                (function(__iced_k) {
+                  __iced_deferrals = new iced.Deferrals(__iced_k, {
+                    parent: ___iced_passed_deferral1,
+                    filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced"
+                  });
+                  _this.setup_proxy(host, host_item, __iced_deferrals.defer({
+                    lineno: 63
+                  }));
+                  __iced_deferrals._fulfill();
+                })(__iced_k);
+              } else {
+                return __iced_k();
+              }
+            })(function() {
+              request_opts = {
+                target: 'http://127.0.0.1:' + _this.servers[host].port
+              };
+              _this.emit('request_delivered', req);
+              return _this.http_proxy.web(req, res, request_opts, function(e) {
+                return next(e);
+              });
+            });
+          }));
+          app.use(function(err, req, res) {
+            var _ref2;
+            this.emit('error', err);
+            return res.end(err.toString(), (_ref2 = req._code) != null ? _ref2 : 500);
+          });
+          _this.http = http.createServer(app);
+          return cb(null, true);
         };
-      })(this)));
-      if (this.opt.middleware.length) {
-        _ref = this.opt.middleware;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          x = _ref[_i];
-          app.use(x);
-        }
-      }
-      this.http = http.createServer(app);
-      this.emit('ready');
-      return cb(null, true);
+      })(this));
     };
 
     ProxyManager.prototype.setup_proxy = function(host, opt, cb) {
@@ -163,7 +226,7 @@
             funcname: "ProxyManager.setup_proxy"
           });
           p.setup(__iced_deferrals.defer({
-            lineno: 75
+            lineno: 85
           }));
           __iced_deferrals._fulfill();
         });
@@ -175,9 +238,7 @@
             port: p.port,
             options: opt
           });
-          return _["in"]('3 seconds', function() {
-            return cb(null, p.port);
-          });
+          return cb(null, p.port);
         };
       })(this));
     };
@@ -203,8 +264,13 @@
         }
       }
     });
-    proxy_man.on('ready', function() {
-      return log('proxy_man_ready');
+    proxy_man.on('error', function(e) {
+      log('error');
+      return log(e.toString());
+    });
+    proxy_man.on('server_spawned', function(data) {
+      log(/server spawned/);
+      return log(data);
     });
     (function(_this) {
       return (function(__iced_k) {
@@ -212,7 +278,7 @@
           filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced"
         });
         proxy_man.setup(__iced_deferrals.defer({
-          lineno: 108
+          lineno: 122
         }));
         __iced_deferrals._fulfill();
       });

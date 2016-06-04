@@ -12,7 +12,8 @@ connect = require 'connect'
 mitm = require 'http-mitm-proxy'
 httpProxy = require 'http-proxy'
 
-module.exports = class Proxy
+module.exports = class Proxy extends (require('events').EventEmitter)
+  _used_ports: []
 
   constructor: (@opt={}) ->
     @opt.host ?= "stackoverflow.com"
@@ -21,10 +22,12 @@ module.exports = class Proxy
     if !@opt.proxy_port
       await @_find_port defer e,open_port
       @opt.proxy_port = open_port
+      @_used_ports.push open_port
 
     if !@opt.port
       await @_find_port defer e,open_port
       @opt.port = open_port
+      @_used_ports.push open_port
 
     @port = @opt.port
     @proxy_port = @opt.proxy_port
@@ -39,6 +42,8 @@ module.exports = class Proxy
     @proxy.use mitm.gunzip
 
     @proxy.onRequest (ctx,cb) =>
+      @emit 'request', ctx.clientToProxyRequest
+
       chunks = []
 
       ctx.isSSL = false
@@ -67,6 +72,10 @@ module.exports = class Proxy
         if @opt.script
           bulk = bulk.replace(/<\/head>/g,@opt.script + '</head>')
 
+        if @opt.html_modifiers?.length
+          for modifier in @opt.html_modifiers
+            bulk = modifier(bulk)
+
         return _end(bulk)
 
       return cb()
@@ -79,6 +88,9 @@ module.exports = class Proxy
       hostRewrite: yes
       protocolRewrite: 'http'
     })
+
+    @http_proxy.on 'error', (e) =>
+      @emit 'error', e
 
     # rewriter
     _rewrite = (attr_name,node) =>
@@ -105,8 +117,14 @@ module.exports = class Proxy
       )
     }]
 
+    if @opt.selects
+      selects = selects.concat(@opt.selects)
+
     app = connect()
     app.use harmon([],selects,yes)
+
+    if @opt.middleware?.length
+      app.use x for x in @opt.middleware
 
     app.use ((req,res) =>
       req.headers.host = @opt.host
@@ -115,11 +133,13 @@ module.exports = class Proxy
         target: 'http://127.0.0.1:' + @opt.proxy_port
       }
 
-      if agent = req.headers['User-Agent']
-        request_opts.agent = agent
-
-      @http_proxy.web(req,res,request_opts)
+      @http_proxy.web req, res, request_opts, (e) ->
+        return next e
     )
+
+    app.use (err,req,res) ->
+      @emit 'error', err
+      return res.end(err.toString(),(req._code ? 500))
 
     @http = http.createServer(app)
 
@@ -132,7 +152,11 @@ module.exports = class Proxy
   _find_port: (cb) ->
     @portrange ?= 45032
 
+    while @portrange in @_used_ports
+      @portrange += 1
+
     port = @portrange
+
     @portrange += 1
 
     server = require('net').connect port, =>

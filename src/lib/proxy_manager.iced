@@ -23,6 +23,10 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     @opt.middleware = []
 
   setup: (cb) ->
+    if _.size(@hosts)
+      for host,host_item of @hosts
+        await @setup_proxy host, host_item, defer()
+
     @http_proxy = httpProxy.createProxyServer({
       ws: yes
       xfwd: yes
@@ -31,14 +35,19 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
       protocolRewrite: 'http'
     })
 
+    @http_proxy.on 'error', (e) =>
+      @emit 'error', e
+
     app = connect()
+
+    if @opt.middleware?.length
+      app.use x for x in @opt.middleware
 
     app.use ((req,res,next) =>
       host = req.hostname ? req.headers?.host ? req.host ? no
 
       if !host
-        @emit 'error', new Error("Host unparsable")
-        return res.end(null,500)
+        return next new Error '`host` unparsable'
 
       if host.includes(':')
         host = host.split(':').shift()
@@ -48,7 +57,8 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
       if !(host_item = @hosts[host])
         @emit 'request_ignored', req
-        return res.end "Forbidden", 403
+        req._code = 403
+        return next new Error 'Forbidden'
 
       if !@servers[host]
         await @setup_proxy host, host_item, defer()
@@ -58,16 +68,16 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
       }
 
       @emit 'request_delivered', req
-      @http_proxy.web(req,res,request_opts)
+      @http_proxy.web req, res, request_opts, (e) ->
+        return next e
     )
 
-    if @opt.middleware.length
-      for x in @opt.middleware
-        app.use x
+    app.use (err,req,res) ->
+      @emit 'error', err
+      return res.end(err.toString(),(req._code ? 500))
 
     @http = http.createServer(app)
 
-    @emit 'ready'
     return cb null, yes
 
   setup_proxy: (host,opt,cb) ->
@@ -78,8 +88,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
     @emit 'server_spawned', {host:host,port:p.port,options:opt}
 
-    _.in '3 seconds', ->
-      return cb null, p.port
+    return cb null, p.port
 
   listen: ->
     @http.listen @opt.port
@@ -103,8 +112,13 @@ if !module.parent
     }
   })
 
-  proxy_man.on 'ready', ->
-    log 'proxy_man_ready'
+  proxy_man.on 'error', (e) ->
+    log 'error'
+    log e.toString()
+
+  proxy_man.on 'server_spawned', (data) ->
+    log /server spawned/
+    log data
 
   await proxy_man.setup defer()
 
