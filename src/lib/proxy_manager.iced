@@ -1,5 +1,6 @@
 # vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2
 log = (x...) -> try console.log x...
+logger = require './logger'
 
 _ = require('wegweg')({
   globals: no
@@ -99,15 +100,21 @@ if !module.parent
     hosts: {
       'localhost': {
         host: 'stackoverflow.com'
-        script: """
+        append_head: """
           <script>alert('stackoverflow')</script>
         """
+        html_modifiers: [
+          ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
+        ]
       }
       'proxy.com': {
         host: 'greatist.com'
-        script: """
+        append_head: """
           <script>alert('greatist.com')</script>
         """
+        html_modifiers: [
+          ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
+        ]
       }
     }
   })

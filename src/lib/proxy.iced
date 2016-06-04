@@ -1,5 +1,6 @@
 # vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2
 log = (x...) -> try console.log x...
+logger = require './logger'
 
 _ = require('wegweg')({
   globals: no
@@ -69,8 +70,8 @@ module.exports = class Proxy extends (require('events').EventEmitter)
         content_type = ctx.serverToProxyResponse.headers?['content-type'] ? 'none'
         return _end(body) if !(content_type.indexOf('text/html') > -1)
 
-        if @opt.script
-          bulk = bulk.replace(/<\/head>/g,@opt.script + '</head>')
+        if @opt.append_head
+          bulk = bulk.replace(/<\/head>/g,@opt.append_head + '</head>')
 
         if @opt.html_modifiers?.length
           for modifier in @opt.html_modifiers
@@ -117,8 +118,8 @@ module.exports = class Proxy extends (require('events').EventEmitter)
       )
     }]
 
-    if @opt.selects
-      selects = selects.concat(@opt.selects)
+    if @opt.harmon_selects
+      selects = selects.concat(@opt.harmon_selects)
 
     app = connect()
     app.use harmon([],selects,yes)

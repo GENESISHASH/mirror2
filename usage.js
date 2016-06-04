@@ -2,18 +2,24 @@ var mirror, server;
 
 mirror = require('./');
 
-var _ = require('wegweg')()
-log(mirror)
-
 server = new mirror.ProxyManager({
   hosts: {
     'localhost': {
       host: 'stackoverflow.com',
-      script: "<script>alert(1)</script>"
+      html_modifiers: [
+        (function(x) {
+          return x.replace('<title>', '<title>(mirror-mirror) ');
+        })
+      ]
     },
     'proxy.com': {
       host: 'greatist.com',
-      script: "<script>alert(2)</script>"
+      append_head: "<script>alert('greatist.com')</script>",
+      html_modifiers: [
+        (function(x) {
+          return x.replace('<title>', '<title>(mirror-mirror) ');
+        })
+      ]
     }
   }
 });
