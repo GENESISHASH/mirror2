@@ -1,7 +1,7 @@
 # mirror-mirror
 a serious series of tubes
 
-<img src="https://taky.s3.amazonaws.com/81gm232x02ou.svg" height="225">
+<img src="https://taky.s3.amazonaws.com/31gm6glfzxkf.svg" height="225">
 
 # usage
 
