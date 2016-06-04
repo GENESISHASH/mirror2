@@ -30,7 +30,10 @@ mirror = require('./');
 server = new mirror.ProxyManager({
   hosts: {
     'localhost': {
+      // target host
       host: 'stackoverflow.com',
+
+      // synchronous source modifiers for content-type: text/html
       html_modifiers: [
         (function(x) {
           return x.replace('<title>', '<title>(mirror-mirror) ');
@@ -54,7 +57,6 @@ server.setup(function() {
   return console.log(":7777");
 });
 ```
-
 <img src="https://taky.s3.amazonaws.com/11gm75efdhkt.png" width=300>
 
 ## mirror.ProxyManager
