@@ -124,7 +124,7 @@
                   (function(__iced_k) {
                     __iced_deferrals = new iced.Deferrals(__iced_k, {
                       parent: ___iced_passed_deferral,
-                      filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced",
+                      filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced",
                       funcname: "ProxyManager.setup"
                     });
                     _this.setup_proxy(host, host_item, __iced_deferrals.defer({
@@ -184,7 +184,7 @@
                 (function(__iced_k) {
                   __iced_deferrals = new iced.Deferrals(__iced_k, {
                     parent: ___iced_passed_deferral1,
-                    filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced"
+                    filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced"
                   });
                   _this.setup_proxy(host, host_item, __iced_deferrals.defer({
                     lineno: 64
@@ -224,7 +224,7 @@
         return (function(__iced_k) {
           __iced_deferrals = new iced.Deferrals(__iced_k, {
             parent: ___iced_passed_deferral,
-            filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced",
+            filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced",
             funcname: "ProxyManager.setup_proxy"
           });
           p.setup(__iced_deferrals.defer({
@@ -287,7 +287,7 @@
     (function(_this) {
       return (function(__iced_k) {
         __iced_deferrals = new iced.Deferrals(__iced_k, {
-          filename: "/Users/douglaslauer/www/lab/host-proxy/src/lib/proxy_manager.iced"
+          filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced"
         });
         proxy_man.setup(__iced_deferrals.defer({
           lineno: 129

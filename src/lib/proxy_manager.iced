@@ -131,5 +131,4 @@ if !module.parent
 
   proxy_man.listen 7777
   log ":7777"
-##
 
