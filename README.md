@@ -1,9 +1,10 @@
 <img src="https://taky.s3.amazonaws.com/31gm6glfzxkf.svg" height="225">
 
 # mirror-mirror
-`mirror-mirror` is a webserver project designed to reverse proxy and "mitm"
-multiple sites. put it behind nginx and inject custom connect middleware into 
-the proxy manager or specific proxy children using config options.
+`mirror-mirror` is designed to reverse proxy and "mitm" modify remote hosts. it 
+supports custom connect middlewares at both the routing-level and the
+individual host level as well as sync string transforms and harmon select 
+modifiers.
 
 _magic mirror on the wall, who is the fairest one of all?_
 
