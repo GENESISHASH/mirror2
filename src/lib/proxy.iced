@@ -126,12 +126,14 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     if @opt.middleware?.length
       app.use x for x in @opt.middleware
 
-    app.use ((req,res) =>
+    app.use ((req,res,next) =>
       req.headers.host = @opt.host
 
       request_opts = {
         target: 'http://127.0.0.1:' + @opt.proxy_port
       }
+
+      @emit 'request_delivered', req
 
       @http_proxy.web req, res, request_opts, (e) ->
         return next e

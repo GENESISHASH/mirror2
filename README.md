@@ -3,14 +3,18 @@
 # mirror-mirror
 a serious series of tubes
 
-# usage
+# quick start
 
 ```
 git clone https://github.com/punted/mirror-mirror
 cd mirror-mirror
 npm i
-node test.js
+node usage.js
 ```
+
+open browser to `http://localhost:7777`
+
+# usage
 
 ``` javascript
 var mirror, server;
@@ -37,5 +41,16 @@ server.setup(function() {
 ```
 
 ## mirror.ProxyManager
+### events
+#### proxy_man.on('server_spawned',cb)
+#### proxy_man.on('request',cb)
+#### proxy_man.on('request_ignored',cb)
+#### proxy_man.on('request_delivered',cb)
+#### proxy_man.on('error',cb)
+
 ## mirror.Proxy
+### events
+#### proxy.on('request',cb)
+#### proxy.on('request_delivered',cb)
+#### proxy.on('error',cb)
 
