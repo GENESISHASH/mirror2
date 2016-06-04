@@ -69,7 +69,7 @@ server.setup(function() {
 
 ## mirror.ProxyManager
 ### events
-##### proxy_man.on('server_spawned',cb)
+#### proxy_man.on('server_spawned',cb)
 #### proxy_man.on('request',cb)
 #### proxy_man.on('request_ignored',cb)
 #### proxy_man.on('request_delivered',cb)
