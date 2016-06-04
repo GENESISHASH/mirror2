@@ -1,5 +1,7 @@
 <img src="https://taky.s3.amazonaws.com/31gm6glfzxkf.svg" height="225">
 
+_Magic mirror on the wall, who is the fairest one of all?_
+
 # mirror-mirror
 a serious series of tubes
 
