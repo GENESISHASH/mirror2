@@ -79,10 +79,16 @@
     Proxy.prototype._used_ports = [];
 
     function Proxy(opt) {
-      var _base;
+      var _base, _base1;
       this.opt = opt != null ? opt : {};
       if ((_base = this.opt).host == null) {
         _base.host = "stackoverflow.com";
+      }
+      if ((_base1 = this.opt).silent == null) {
+        _base1.silent = false;
+      }
+      if (!this.opt.silent) {
+        this.setup_loggers();
       }
     }
 
@@ -106,7 +112,7 @@
                     return open_port = arguments[1];
                   };
                 })(),
-                lineno: 23
+                lineno: 26
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -134,7 +140,7 @@
                       return open_port = arguments[1];
                     };
                   })(),
-                  lineno: 28
+                  lineno: 31
                 }));
                 __iced_deferrals._fulfill();
               })(function() {
@@ -153,6 +159,46 @@
           });
         };
       })(this));
+    };
+
+    Proxy.prototype.setup_loggers = function() {
+      var request_events, spawn_events, x, _fn, _i, _j, _len, _len1, _results;
+      this.on('error', function(e) {
+        return logger.error(e);
+      });
+      request_events = ['request', 'request_ignored', 'request_delivered'];
+      _fn = (function(_this) {
+        return function(x) {
+          return _this.on(x, function(req) {
+            var verb;
+            verb = 'info';
+            if (x === 'request_ignored') {
+              verb = 'warn';
+            }
+            return logger[verb](x, {
+              url: req.url,
+              method: req.method
+            });
+          });
+        };
+      })(this);
+      for (_i = 0, _len = request_events.length; _i < _len; _i++) {
+        x = request_events[_i];
+        _fn(x);
+      }
+      spawn_events = ['proxy_listening'];
+      _results = [];
+      for (_j = 0, _len1 = spawn_events.length; _j < _len1; _j++) {
+        x = spawn_events[_j];
+        _results.push((function(_this) {
+          return function(x) {
+            return _this.on(x, function(data) {
+              return logger.info(x, data);
+            });
+          };
+        })(this)(x));
+      }
+      return _results;
     };
 
     Proxy.prototype.setup_proxy = function() {
@@ -203,7 +249,7 @@
     };
 
     Proxy.prototype.setup_http = function() {
-      var app, selects, x, _i, _len, _ref, _ref1, _rewrite;
+      var app, selects, x, _i, _len, _ref, _ref1, _ref2, _rewrite;
       this.http_proxy = httpProxy.createProxyServer({
         ws: true,
         xfwd: true,
@@ -251,15 +297,15 @@
           })(this))
         }
       ];
-      if (this.opt.harmon_selects) {
+      if ((_ref = this.opt.harmon_selects) != null ? _ref.length : void 0) {
         selects = selects.concat(this.opt.harmon_selects);
       }
       app = connect();
       app.use(harmon([], selects, true));
-      if ((_ref = this.opt.middleware) != null ? _ref.length : void 0) {
-        _ref1 = this.opt.middleware;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          x = _ref1[_i];
+      if ((_ref1 = this.opt.middleware) != null ? _ref1.length : void 0) {
+        _ref2 = this.opt.middleware;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          x = _ref2[_i];
           app.use(x);
         }
       }
@@ -276,11 +322,13 @@
           });
         };
       })(this)));
-      app.use(function(err, req, res) {
-        var _ref2;
-        this.emit('error', err);
-        return res.end(err.toString(), (_ref2 = req._code) != null ? _ref2 : 500);
-      });
+      app.use((function(_this) {
+        return function(err, req, res) {
+          var _ref3;
+          _this.emit('error', err);
+          return res.end(err.toString(), (_ref3 = req._code) != null ? _ref3 : 500);
+        };
+      })(this));
       return this.http = http.createServer(app);
     };
 
@@ -288,7 +336,8 @@
       this.proxy.listen({
         port: this.opt.proxy_port
       });
-      return this.http.listen(this.opt.port);
+      this.http.listen(this.opt.port);
+      return this.emit('proxy_listening', this.opt);
     };
 
     Proxy.prototype._find_port = function(cb) {
@@ -327,7 +376,7 @@
           filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy.iced"
         });
         p.setup(__iced_deferrals.defer({
-          lineno: 178
+          lineno: 211
         }));
         __iced_deferrals._fulfill();
       });
