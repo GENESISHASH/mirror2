@@ -158,11 +158,15 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 ##
 if !module.parent
   proxy_man = new ProxyManager({
+    middleware: [((req,res,next) ->
+      log "Proxy manager request: #{req.method} #{req.url}"
+      next()
+    )]
     hosts: {
       'localhost': {
         host: 'stackoverflow.com'
         append_head: """
-          <script>alert('stackoverflow')</script>
+          <script>console.log('mirror-stackoverflow')</script>
         """
         html_modifiers: [
           ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
@@ -171,7 +175,7 @@ if !module.parent
       'proxy.com': {
         host: 'greatist.com'
         append_head: """
-          <script>alert('greatist.com')</script>
+          <script>console.log('mirror-greatist.com')</script>
         """
         html_modifiers: [
           ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
