@@ -22,6 +22,53 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     @opt.port ?= 7777
     @hosts = @opt.hosts ? {}
     @opt.middleware = []
+    @opt.globals ?= yes
+
+    if @opt.globals
+      process.on 'uncaughtException', (e) ->
+        ignore = [
+          'ECONNRESET'
+          'hang up'
+        ]
+
+        for x in ignore
+          return no if e.toString().includes(x)
+
+        logger.error e
+
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+
+      require('http').globalAgent.maxSockets = 99999
+      require('https').globalAgent.maxSockets = 99999
+
+      @setMaxListeners 9999
+
+    @setup_loggers()
+
+  setup_loggers: ->
+    @on 'error', (e) ->
+      logger.error e
+
+    request_events = [
+      'request'
+      'request_ignored'
+      'request_delivered'
+
+    ]
+
+    for x in request_events
+      do (x) =>
+        @on x, (req) ->
+          verb = 'info'
+          verb = 'warn' if x is 'request_ignored'
+          logger[verb] x, {
+            url: req.url
+            method: req.method
+            proxy_host: req.proxy_host
+          }
+
+    @on 'server_spawned', (data) ->
+      logger.info 'server_spawned', data
 
   setup: (cb) ->
     if _.size(@hosts)
@@ -54,6 +101,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
         host = host.split(':').shift()
 
       req.proxy_host = host
+
       @emit 'request', req
 
       if !(host_item = @hosts[host])
@@ -73,7 +121,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
         return next e
     )
 
-    app.use (err,req,res) ->
+    app.use (err,req,res) =>
       @emit 'error', err
       return res.end(err.toString(),(req._code ? 500))
 
@@ -86,6 +134,9 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
     await p.setup defer()
     p.listen()
+
+    p.on 'error', (e) =>
+      @emit 'error', e
 
     @emit 'server_spawned', {host:host,port:p.port,options:opt}
 
@@ -118,14 +169,6 @@ if !module.parent
       }
     }
   })
-
-  proxy_man.on 'error', (e) ->
-    log 'error'
-    log e.toString()
-
-  proxy_man.on 'server_spawned', (data) ->
-    log /server spawned/
-    log data
 
   await proxy_man.setup defer()
 
