@@ -202,7 +202,7 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     server.on 'error', ->
       return cb null, port
 
-##
+###
 if !module.parent
   p = new Proxy {
     host: 'greatist.com'
@@ -213,4 +213,5 @@ if !module.parent
 
   p.listen()
   log ":8009"
+###
 

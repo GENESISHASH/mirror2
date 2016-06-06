@@ -158,7 +158,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     @http.listen @opt.port
     @emit 'proxy_manager_listening', @opt
 
-##
+###
 if !module.parent
   proxy_man = new ProxyManager({
 
@@ -210,4 +210,5 @@ if !module.parent
 
   proxy_man.listen 7777
   console.log ":7777"
+###
 
