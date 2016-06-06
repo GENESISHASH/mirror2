@@ -25,7 +25,16 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     @opt.ascii ?= yes
 
     if @opt.globals
-      process.on 'uncaughtException', (e) ->
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+
+      require('http').globalAgent.maxSockets = 99999
+      require('https').globalAgent.maxSockets = 99999
+
+      @setMaxListeners 9999
+
+      process.on 'uncaughtException', (e) =>
+        @emit 'error', e
+
         ignore = [
           'ECONNRESET'
           'hang up'
@@ -35,13 +44,6 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
           return no if e.toString().includes(x)
 
         logger.error e
-
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-
-      require('http').globalAgent.maxSockets = 99999
-      require('https').globalAgent.maxSockets = 99999
-
-      @setMaxListeners 9999
 
     @opt.silent ?= no
     @setup_loggers() unless @opt.silent
