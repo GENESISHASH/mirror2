@@ -43,7 +43,8 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
       @setMaxListeners 9999
 
-    @setup_loggers()
+    @opt.silent ?= no
+    @setup_loggers() unless @opt.silent
 
   setup_loggers: ->
     @on 'error', (e) ->

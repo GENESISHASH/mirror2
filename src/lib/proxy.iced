@@ -19,6 +19,9 @@ module.exports = class Proxy extends (require('events').EventEmitter)
   constructor: (@opt={}) ->
     @opt.host ?= "stackoverflow.com"
 
+    @opt.silent ?= no
+    @setup_loggers() unless @opt.silent
+
   setup: (cb) ->
     if !@opt.proxy_port
       await @_find_port defer e,open_port
@@ -35,8 +38,6 @@ module.exports = class Proxy extends (require('events').EventEmitter)
 
     @setup_proxy()
     @setup_http()
-
-    @setup_loggers() if !@opt.silent
 
     cb null, @opt
 
