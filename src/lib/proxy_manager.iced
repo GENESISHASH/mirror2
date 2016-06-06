@@ -19,7 +19,6 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
   servers: {}
 
   constructor: (@opt={}) ->
-    @opt.port ?= 7777
     @hosts = @opt.hosts ? {}
     @opt.middleware = []
     @opt.globals ?= yes
@@ -67,8 +66,15 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
             proxy_host: req.proxy_host
           }
 
-    @on 'server_spawned', (data) ->
-      logger.info 'server_spawned', data
+    spawn_events = [
+      'proxy_manager_listening'
+      'server_spawned'
+    ]
+
+    for x in spawn_events
+      do (x) =>
+        @on x, (data) ->
+          logger.info x, data
 
   setup: (cb) ->
     if _.size(@hosts)
@@ -142,8 +148,10 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
     return cb null, p.port
 
-  listen: ->
+  listen: (port) ->
+    @opt.port = port ? 7777
     @http.listen @opt.port
+    @emit 'proxy_manager_listening', @opt
 
 ##
 if !module.parent
