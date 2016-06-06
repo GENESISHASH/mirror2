@@ -22,6 +22,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     @hosts = @opt.hosts ? {}
     @opt.middleware = []
     @opt.globals ?= yes
+    @opt.ascii ?= yes
 
     if @opt.globals
       process.on 'uncaughtException', (e) ->

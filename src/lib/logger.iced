@@ -10,7 +10,10 @@ winston = require 'winston'
 logger = new winston.Logger({
   exitOnError: no
   transports: [
-    new (winston.transports.Console)(),
+    new (winston.transports.Console)({
+      timestamp: yes
+      colorize: yes
+    }),
   ]
 })
 
