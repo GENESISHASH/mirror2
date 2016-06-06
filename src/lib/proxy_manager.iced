@@ -149,7 +149,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     return cb null, p.port
 
   listen: (port) ->
-    @opt.port = port ? 7777
+    @opt.port ?= port ? 7777
     @http.listen @opt.port
     @emit 'proxy_manager_listening', @opt
 
