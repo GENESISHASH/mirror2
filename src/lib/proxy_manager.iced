@@ -206,7 +206,8 @@ if !module.parent
     }
   })
 
-  proxy_man.setup ->
-    proxy_man.listen 7777
-    console.log ":7777"
+  await proxy_man.setup defer()
+
+  proxy_man.listen 7777
+  console.log ":7777"
 
