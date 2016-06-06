@@ -1,6 +1,6 @@
 var mirror, server;
 
-mirror = require('./');
+mirror = require('./../');
 
 server = new mirror.ProxyManager({
   hosts: {
