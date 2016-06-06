@@ -91,21 +91,24 @@
         _base2.ascii = true;
       }
       if (this.opt.globals) {
-        process.on('uncaughtException', function(e) {
-          var ignore, x, _i, _len;
-          ignore = ['ECONNRESET', 'hang up'];
-          for (_i = 0, _len = ignore.length; _i < _len; _i++) {
-            x = ignore[_i];
-            if (e.toString().includes(x)) {
-              return false;
-            }
-          }
-          return logger.error(e);
-        });
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
         require('http').globalAgent.maxSockets = 99999;
         require('https').globalAgent.maxSockets = 99999;
         this.setMaxListeners(9999);
+        process.on('uncaughtException', (function(_this) {
+          return function(e) {
+            var ignore, x, _i, _len;
+            _this.emit('error', e);
+            ignore = ['ECONNRESET', 'hang up'];
+            for (_i = 0, _len = ignore.length; _i < _len; _i++) {
+              x = ignore[_i];
+              if (e.toString().includes(x)) {
+                return false;
+              }
+            }
+            return logger.error(e);
+          };
+        })(this));
       }
       if ((_base3 = this.opt).silent == null) {
         _base3.silent = false;
@@ -197,7 +200,7 @@
                       funcname: "ProxyManager.setup"
                     });
                     _this.setup_proxy(host, host_item, __iced_deferrals.defer({
-                      lineno: 82
+                      lineno: 84
                     }));
                     __iced_deferrals._fulfill();
                   })(_next);
@@ -256,7 +259,7 @@
                     filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced"
                   });
                   _this.setup_proxy(host, host_item, __iced_deferrals.defer({
-                    lineno: 119
+                    lineno: 121
                   }));
                   __iced_deferrals._fulfill();
                 })(__iced_k);
@@ -300,7 +303,7 @@
             funcname: "ProxyManager.setup_proxy"
           });
           p.setup(__iced_deferrals.defer({
-            lineno: 143
+            lineno: 145
           }));
           __iced_deferrals._fulfill();
         });
