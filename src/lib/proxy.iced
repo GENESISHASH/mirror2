@@ -93,7 +93,7 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     @http_proxy.on 'error', (e) =>
       @emit 'error', e
 
-    # rewriter
+    # harmon rewriters for relative src/href values
     _rewrite = (attr_name,node) =>
       attr = node.getAttribute attr_name
       return if !attr?.includes?(@opt.host)
