@@ -149,7 +149,7 @@ module.exports = class Proxy extends (require('events').EventEmitter)
       )
     }]
 
-    if @opt.harmon_selects
+    if @opt.harmon_selects?.length
       selects = selects.concat(@opt.harmon_selects)
 
     app = connect()

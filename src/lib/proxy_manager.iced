@@ -20,7 +20,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
   constructor: (@opt={}) ->
     @hosts = @opt.hosts ? {}
-    @opt.middleware = []
+    @opt.middleware ?= []
     @opt.globals ?= yes
     @opt.ascii ?= yes
 
@@ -158,34 +158,52 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 ##
 if !module.parent
   proxy_man = new ProxyManager({
+
+    # middleware at the proxy manager level
     middleware: [((req,res,next) ->
-      log "Proxy manager request: #{req.method} #{req.url}"
+      console.log "ProxyManager request: #{req.method} #{req.url}"
       next()
     )]
+
     hosts: {
+
+      # local host to serve from
       'localhost': {
+
+        # remote host to mirror
         host: 'stackoverflow.com'
+
+        # middleware at the proxy instance level
+        middleware: [((req,res,next) ->
+          console.log "ProxyInstance request: #{req.method} #{req.url}"
+          next()
+        )]
+
+        # synchronous source modifiers for text/html
+        html_modifiers: [
+          ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
+        ]
+
+        # html blob to append before `</head>` tags
         append_head: """
           <script>console.log('mirror-stackoverflow')</script>
         """
+      }
+
+      'proxy.com': {
+        host: 'greatist.com'
         html_modifiers: [
           ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
         ]
-      }
-      'proxy.com': {
-        host: 'greatist.com'
         append_head: """
           <script>console.log('mirror-greatist.com')</script>
         """
-        html_modifiers: [
-          ((x) -> return x.replace('<title>','<title>(mirror-mirror) '))
-        ]
       }
+
     }
   })
 
-  await proxy_man.setup defer()
-
-  proxy_man.listen 7777
-  log ":7777"
+  proxy_man.setup ->
+    proxy_man.listen 7777
+    console.log ":7777"
 

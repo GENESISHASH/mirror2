@@ -67,11 +67,13 @@ server.setup(function() {
   return console.log(":7777");
 });
 ```
-<img src="https://taky.s3.amazonaws.com/11gm75efdhkt.png" width=300>
+
+<img src="https://taky.s3.amazonaws.com/11gm75efdhkt.png" width=200>
 
 ## mirror.ProxyManager
 ### events
-#### proxy_man.on('server_spawned',cb)
+#### proxy_man.on('proxy_spawned',cb)
+#### proxy_man.on('proxy_manager_listening',cb)
 #### proxy_man.on('request',cb)
 #### proxy_man.on('request_ignored',cb)
 #### proxy_man.on('request_delivered',cb)
@@ -79,6 +81,7 @@ server.setup(function() {
 
 ## mirror.Proxy
 ### events
+#### proxy.on('proxy_listening',cb)
 #### proxy.on('request',cb)
 #### proxy.on('request_delivered',cb)
 #### proxy.on('error',cb)
