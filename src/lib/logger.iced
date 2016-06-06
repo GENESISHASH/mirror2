@@ -1,6 +1,18 @@
+log = (x...) -> try console.log x...
+
+_ = require('wegweg')({
+  globals: no
+  shelljs: no
+})
+
 winston = require 'winston'
 
-module.exports = logger = {
+logger = new winston.Logger({
+  exitOnError: no
+  transports: [
+    new (winston.transports.Console)(),
+  ]
+})
 
-}
+module.exports = logger
 
