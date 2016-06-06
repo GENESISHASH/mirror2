@@ -53,7 +53,6 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
       'request'
       'request_ignored'
       'request_delivered'
-
     ]
 
     for x in request_events
@@ -69,7 +68,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
     spawn_events = [
       'proxy_manager_listening'
-      'server_spawned'
+      'proxy_spawned'
     ]
 
     for x in spawn_events
@@ -137,6 +136,8 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     return cb null, yes
 
   setup_proxy: (host,opt,cb) ->
+    opt.silent ?= yes
+
     @servers[host] = p = new Proxy opt
 
     await p.setup defer()
@@ -145,7 +146,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     p.on 'error', (e) =>
       @emit 'error', e
 
-    @emit 'server_spawned', {host:host,port:p.port,options:opt}
+    @emit 'child_spawned', {host:host,port:p.port,options:opt}
 
     return cb null, p.port
 

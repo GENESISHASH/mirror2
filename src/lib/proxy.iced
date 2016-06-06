@@ -36,7 +36,38 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     @setup_proxy()
     @setup_http()
 
+    @setup_loggers() if !@opt.silent
+
     cb null, @opt
+
+  setup_loggers: ->
+    @on 'error', (e) ->
+      logger.error e
+
+    request_events = [
+      'request'
+      'request_ignored'
+      'request_delivered'
+    ]
+
+    for x in request_events
+      do (x) =>
+        @on x, (req) ->
+          verb = 'info'
+          verb = 'warn' if x is 'request_ignored'
+          logger[verb] x, {
+            url: req.url
+            method: req.method
+          }
+
+    spawn_events = [
+      'proxy_listening'
+    ]
+
+    for x in spawn_events
+      do (x) =>
+        @on x, (data) ->
+          logger.info x, data
 
   setup_proxy: ->
     @proxy = mitm()
@@ -140,7 +171,7 @@ module.exports = class Proxy extends (require('events').EventEmitter)
         return next e
     )
 
-    app.use (err,req,res) ->
+    app.use (err,req,res) =>
       @emit 'error', err
       return res.end(err.toString(),(req._code ? 500))
 
@@ -151,6 +182,7 @@ module.exports = class Proxy extends (require('events').EventEmitter)
       port: @opt.proxy_port
     }
     @http.listen @opt.port
+    @emit 'proxy_listening', @opt
 
   _find_port: (cb) ->
     @portrange ?= 45032
