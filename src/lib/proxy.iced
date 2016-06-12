@@ -12,7 +12,6 @@ harmon = require 'harmon'
 connect = require 'connect'
 mitm = require 'http-mitm-proxy'
 httpProxy = require 'http-proxy'
-https = require 'https'
 
 module.exports = class Proxy extends (require('events').EventEmitter)
   _used_ports: []
@@ -126,7 +125,6 @@ module.exports = class Proxy extends (require('events').EventEmitter)
       autoRewrite: yes
       hostRewrite: yes
       secure: no
-      target: "https://#{@opt.host}"
     })
 
     @http_proxy.on 'error', (e) =>

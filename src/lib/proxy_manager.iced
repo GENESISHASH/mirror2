@@ -12,7 +12,6 @@ connect = require 'connect'
 httpProxy = require 'http-proxy'
 
 Proxy = require './proxy'
-https = require 'https'
 
 module.exports = class ProxyManager extends (require('events').EventEmitter)
 

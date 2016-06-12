@@ -13,6 +13,16 @@ server = new mirror.ProxyManager({
           return x.replace('<title>', '<title>(mirror-mirror) ');
         })
       ]
+    },
+    'greatist.com': {
+      host: 'papergangster.com',
+      enable_ssl: true,
+      silent: true,
+      html_modifiers: [
+        (function(x) {
+          return x.replace('<title>','<title>lol dongs ');
+        })
+      ]
     }
   }
 });
