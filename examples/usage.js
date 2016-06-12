@@ -5,16 +5,9 @@ mirror = require('./../');
 server = new mirror.ProxyManager({
   hosts: {
     'localhost': {
-      host: 'stackoverflow.com',
-      html_modifiers: [
-        (function(x) {
-          return x.replace('<title>', '<title>(mirror-mirror) ');
-        })
-      ]
-    },
-    'proxy.com': {
-      host: 'greatist.com',
-      append_head: "<script>alert('greatist.com')</script>",
+      host: 'www.ssllabs.com',
+      enable_ssl: true,
+      silent: false,
       html_modifiers: [
         (function(x) {
           return x.replace('<title>', '<title>(mirror-mirror) ');

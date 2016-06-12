@@ -12,13 +12,13 @@ harmon = require 'harmon'
 connect = require 'connect'
 mitm = require 'http-mitm-proxy'
 httpProxy = require 'http-proxy'
+https = require 'https'
 
 module.exports = class Proxy extends (require('events').EventEmitter)
   _used_ports: []
 
   constructor: (@opt={}) ->
     @opt.host ?= "stackoverflow.com"
-
     @opt.silent ?= no
     @setup_loggers() unless @opt.silent
 
@@ -78,8 +78,14 @@ module.exports = class Proxy extends (require('events').EventEmitter)
       @emit 'request', ctx.clientToProxyRequest
 
       chunks = []
-
       ctx.isSSL = false
+
+      if @opt.enable_ssl
+        ctx.isSSL = true
+        ctx.proxyToServerRequestOptions.agent = @proxy.httpsAgent
+        ctx.proxyToServerRequestOptions.port = '443'
+
+
       ctx.proxyToServerRequestOptions.headers['accept-encoding'] = 'gzip'
 
       ctx.onResponseData (ctx,chunk,next) =>
@@ -119,7 +125,8 @@ module.exports = class Proxy extends (require('events').EventEmitter)
       xfwd: yes
       autoRewrite: yes
       hostRewrite: yes
-      protocolRewrite: 'http'
+      secure: no
+      target: "https://#{@opt.host}"
     })
 
     @http_proxy.on 'error', (e) =>
@@ -161,13 +168,10 @@ module.exports = class Proxy extends (require('events').EventEmitter)
 
     app.use ((req,res,next) =>
       req.headers.host = @opt.host
-
       request_opts = {
         target: 'http://127.0.0.1:' + @opt.proxy_port
       }
-
       @emit 'request_delivered', req
-
       @http_proxy.web req, res, request_opts, (e) ->
         return next e
     )
@@ -214,4 +218,3 @@ if !module.parent
   p.listen()
   log ":8009"
 ###
-
