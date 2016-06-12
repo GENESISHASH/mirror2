@@ -37,6 +37,8 @@ server = new mirror.ProxyManager({
 
       // remote host to mirror
       host: 'stackoverflow.com',
+      // enable ssl for connection to remote host
+      enable_ssl: true,
 
       // synchronous source modifiers for text/html
       html_modifiers: [
@@ -48,7 +50,7 @@ server = new mirror.ProxyManager({
 
     'proxy.com': {
       host: 'greatist.com',
-
+      enable_ssl: false,
       // html head appendage for text/html
       append_head: "<script>alert('greatist.com')</script>",
 
