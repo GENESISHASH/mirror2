@@ -37,6 +37,7 @@ server = new mirror.ProxyManager({
 
       // remote host to mirror
       host: 'stackoverflow.com',
+
       // enable ssl for connection to remote host
       enable_ssl: true,
 
@@ -72,7 +73,7 @@ server.setup(function() {
 
 <img src="https://taky.s3.amazonaws.com/11gm75efdhkt.png" width=200>
 
-## mirror.ProxyManager
+## new mirror.ProxyManager(options={})
 ### events
 #### proxy_man.on('proxy_spawned',cb)
 #### proxy_man.on('proxy_manager_listening',cb)
@@ -81,7 +82,7 @@ server.setup(function() {
 #### proxy_man.on('request_delivered',cb)
 #### proxy_man.on('error',cb)
 
-## mirror.Proxy
+## new mirror.Proxy(options={})
 ### events
 #### proxy.on('proxy_listening',cb)
 #### proxy.on('request',cb)

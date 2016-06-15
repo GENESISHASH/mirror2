@@ -21,6 +21,8 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     @opt.silent ?= no
     @setup_loggers() unless @opt.silent
 
+    @opt.hide_error_stack ?= yes
+
   setup: (cb) ->
     if !@opt.proxy_port
       await @_find_port defer e,open_port
@@ -174,9 +176,14 @@ module.exports = class Proxy extends (require('events').EventEmitter)
         return next e
     )
 
-    app.use (err,req,res) =>
+    app.use ((err,req,res,next) =>
       @emit 'error', err
-      return res.end(err.toString(),(req._code ? 500))
+      res.statusCode = (req._code ? 500)
+      if @opt.hide_error_stack
+        return res.end(err.toString())
+      else
+        next()
+    )
 
     @http = http.createServer(app)
 

@@ -22,7 +22,6 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
     @hosts = @opt.hosts ? {}
     @opt.middleware ?= []
     @opt.globals ?= yes
-    @opt.ascii ?= yes
 
     if @opt.globals
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
@@ -47,6 +46,8 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
     @opt.silent ?= no
     @setup_loggers() unless @opt.silent
+
+    @opt.hide_error_stack ?= yes
 
   setup_loggers: ->
     @on 'error', (e) ->
@@ -130,9 +131,14 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
         return next e
     )
 
-    app.use (err,req,res) =>
+    app.use ((err,req,res,next) =>
       @emit 'error', err
-      return res.end(err.toString(),(req._code ? 500))
+      res.statusCode = (req._code ? 500)
+      if @opt.hide_error_stack
+        return res.end(err.toString())
+      else
+        next()
+    )
 
     @http = http.createServer(app)
 
@@ -140,6 +146,7 @@ module.exports = class ProxyManager extends (require('events').EventEmitter)
 
   setup_proxy: (host,opt,cb) ->
     opt.silent ?= yes
+    opt.hide_error_stack ?= @opt.hide_error_stack
 
     @servers[host] = p = new Proxy opt
 
@@ -167,6 +174,9 @@ if !module.parent
       console.log "ProxyManager request: #{req.method} #{req.url}"
       next()
     )]
+
+    # don't show the error stack
+    show_error_stack: off
 
     hosts: {
 

@@ -87,9 +87,6 @@
       if ((_base1 = this.opt).globals == null) {
         _base1.globals = true;
       }
-      if ((_base2 = this.opt).ascii == null) {
-        _base2.ascii = true;
-      }
       if (this.opt.globals) {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
         require('http').globalAgent.maxSockets = 99999;
@@ -110,11 +107,14 @@
           };
         })(this));
       }
-      if ((_base3 = this.opt).silent == null) {
-        _base3.silent = false;
+      if ((_base2 = this.opt).silent == null) {
+        _base2.silent = false;
       }
       if (!this.opt.silent) {
         this.setup_loggers();
+      }
+      if ((_base3 = this.opt).hide_error_stack == null) {
+        _base3.hide_error_stack = true;
       }
     }
 
@@ -196,11 +196,11 @@
                   (function(__iced_k) {
                     __iced_deferrals = new iced.Deferrals(__iced_k, {
                       parent: ___iced_passed_deferral,
-                      filename: "/Users/nick/Desktop/mirror-mirror/src/lib/proxy_manager.iced",
+                      filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced",
                       funcname: "ProxyManager.setup"
                     });
                     _this.setup_proxy(host, host_item, __iced_deferrals.defer({
-                      lineno: 84
+                      lineno: 85
                     }));
                     __iced_deferrals._fulfill();
                   })(_next);
@@ -256,10 +256,10 @@
                 (function(__iced_k) {
                   __iced_deferrals = new iced.Deferrals(__iced_k, {
                     parent: ___iced_passed_deferral1,
-                    filename: "/Users/nick/Desktop/mirror-mirror/src/lib/proxy_manager.iced"
+                    filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced"
                   });
                   _this.setup_proxy(host, host_item, __iced_deferrals.defer({
-                    lineno: 121
+                    lineno: 122
                   }));
                   __iced_deferrals._fulfill();
                 })(__iced_k);
@@ -276,11 +276,16 @@
               });
             });
           }));
-          app.use(function(err, req, res) {
+          app.use((function(err, req, res, next) {
             var _ref2;
             _this.emit('error', err);
-            return res.end(err.toString(), (_ref2 = req._code) != null ? _ref2 : 500);
-          });
+            res.statusCode = (_ref2 = req._code) != null ? _ref2 : 500;
+            if (_this.opt.hide_error_stack) {
+              return res.end(err.toString());
+            } else {
+              return next();
+            }
+          }));
           _this.http = http.createServer(app);
           return cb(null, true);
         };
@@ -294,16 +299,19 @@
       if (opt.silent == null) {
         opt.silent = true;
       }
+      if (opt.hide_error_stack == null) {
+        opt.hide_error_stack = this.opt.hide_error_stack;
+      }
       this.servers[host] = p = new Proxy(opt);
       (function(_this) {
         return (function(__iced_k) {
           __iced_deferrals = new iced.Deferrals(__iced_k, {
             parent: ___iced_passed_deferral,
-            filename: "/Users/nick/Desktop/mirror-mirror/src/lib/proxy_manager.iced",
+            filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy_manager.iced",
             funcname: "ProxyManager.setup_proxy"
           });
           p.setup(__iced_deferrals.defer({
-            lineno: 145
+            lineno: 152
           }));
           __iced_deferrals._fulfill();
         });
@@ -346,6 +354,9 @@
         console.log "ProxyManager request: #{req.method} #{req.url}"
         next()
       )]
+  
+       * don't show the error stack
+      show_error_stack: off
   
       hosts: {
   

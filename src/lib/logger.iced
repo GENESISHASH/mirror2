@@ -1,5 +1,3 @@
-log = (x...) -> try console.log x...
-
 _ = require('wegweg')({
   globals: no
   shelljs: no

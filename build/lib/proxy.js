@@ -79,7 +79,7 @@
     Proxy.prototype._used_ports = [];
 
     function Proxy(opt) {
-      var _base, _base1;
+      var _base, _base1, _base2;
       this.opt = opt != null ? opt : {};
       if ((_base = this.opt).host == null) {
         _base.host = "stackoverflow.com";
@@ -89,6 +89,9 @@
       }
       if (!this.opt.silent) {
         this.setup_loggers();
+      }
+      if ((_base2 = this.opt).hide_error_stack == null) {
+        _base2.hide_error_stack = true;
       }
     }
 
@@ -102,7 +105,7 @@
             (function(__iced_k) {
               __iced_deferrals = new iced.Deferrals(__iced_k, {
                 parent: ___iced_passed_deferral,
-                filename: "/Users/nick/Desktop/mirror-mirror/src/lib/proxy.iced",
+                filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy.iced",
                 funcname: "Proxy.setup"
               });
               _this._find_port(__iced_deferrals.defer({
@@ -112,7 +115,7 @@
                     return open_port = arguments[1];
                   };
                 })(),
-                lineno: 25
+                lineno: 27
               }));
               __iced_deferrals._fulfill();
             })(function() {
@@ -130,7 +133,7 @@
               (function(__iced_k) {
                 __iced_deferrals = new iced.Deferrals(__iced_k, {
                   parent: ___iced_passed_deferral,
-                  filename: "/Users/nick/Desktop/mirror-mirror/src/lib/proxy.iced",
+                  filename: "/Users/douglaslauer/www/mirror-mirror/src/lib/proxy.iced",
                   funcname: "Proxy.setup"
                 });
                 _this._find_port(__iced_deferrals.defer({
@@ -140,7 +143,7 @@
                       return open_port = arguments[1];
                     };
                   })(),
-                  lineno: 30
+                  lineno: 32
                 }));
                 __iced_deferrals._fulfill();
               })(function() {
@@ -327,13 +330,18 @@
           });
         };
       })(this)));
-      app.use((function(_this) {
-        return function(err, req, res) {
+      app.use(((function(_this) {
+        return function(err, req, res, next) {
           var _ref3;
           _this.emit('error', err);
-          return res.end(err.toString(), (_ref3 = req._code) != null ? _ref3 : 500);
+          res.statusCode = (_ref3 = req._code) != null ? _ref3 : 500;
+          if (_this.opt.hide_error_stack) {
+            return res.end(err.toString());
+          } else {
+            return next();
+          }
         };
-      })(this));
+      })(this)));
       return this.http = http.createServer(app);
     };
 
