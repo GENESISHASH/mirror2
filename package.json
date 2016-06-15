@@ -1,7 +1,7 @@
 {
   "name": "mirror-mirror",
   "description": "a serious series of tubes",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "./build/module.js",
   "author": "douglas lauer <taky@taky.com>",
   "repository": "tosadvisor/mirror-mirror",
