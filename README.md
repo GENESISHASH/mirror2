@@ -1,9 +1,9 @@
 <img src="https://taky.s3.amazonaws.com/31gm6glfzxkf.svg" height="225">
 
 # mirror-mirror
-`mirror-mirror` is designed to reverse proxy and "mitm" modify remote hosts. it 
+`mirror-mirror` is designed to reverse proxy and "mitm" modify remote hosts. it
 supports custom connect middlewares at both the routing-level and the
-individual host level as well as sync string transforms and harmon select 
+individual host level as well as sync string transforms and harmon select
 modifiers.
 
 _magic mirror on the wall, who is the fairest one of all?_
@@ -52,6 +52,7 @@ server = new mirror.ProxyManager({
     'proxy.com': {
       host: 'greatist.com',
       enable_ssl: false,
+
       // html head appendage for text/html
       append_head: "<script>alert('greatist.com')</script>",
 
