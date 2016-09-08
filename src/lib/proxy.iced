@@ -195,25 +195,13 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     @emit 'proxy_listening', @opt
 
   _find_port: (cb) ->
-    @portrange ?= 45032
+    derp = require('net').createServer()
 
-    while @portrange in @_used_ports
-      @portrange += 2
-
-    port = @portrange
-
-    @portrange += 1    
-
-    server = require('net').createServer 0, =>
-      server.close()
-      server.destroy()
-      @_find_port cb
-    
-    server.on 'listen', ->
-      return cb yes, server.address()
-    server.on 'error', ->
-      return cb null, port
-
+    derp.listen 0 ,=>
+      port = derp.address().port
+      derp.close()
+      return cb null, port 
+  
 ###
 if !module.parent
   p = new Proxy {
