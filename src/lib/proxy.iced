@@ -198,16 +198,19 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     @portrange ?= 45032
 
     while @portrange in @_used_ports
-      @portrange += 1
+      @portrange += 2
 
     port = @portrange
 
-    @portrange += 1
+    @portrange += 1    
 
-    server = require('net').connect port, =>
+    server = require('net').createServer 0, =>
+      server.close()
       server.destroy()
       @_find_port cb
-
+    
+    server.on 'listen', ->
+      return cb yes, server.address()
     server.on 'error', ->
       return cb null, port
 
