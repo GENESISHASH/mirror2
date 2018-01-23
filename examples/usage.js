@@ -5,7 +5,7 @@ mirror = require('./../');
 server = new mirror.ProxyManager({
   hosts: {
     'localhost': {
-      host: 'www.ssllabs.com',
+      host: 'crowdsale.storiqa.com',
       enable_ssl: true,
       silent: false,
       html_modifiers: [
