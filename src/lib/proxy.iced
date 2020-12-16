@@ -86,7 +86,6 @@ module.exports = class Proxy extends (require('events').EventEmitter)
         ctx.proxyToServerRequestOptions.agent = @proxy.httpsAgent
         ctx.proxyToServerRequestOptions.port = '443'
 
-
       ctx.proxyToServerRequestOptions.headers['accept-encoding'] = 'gzip'
 
       ctx.onResponseData (ctx,chunk,next) =>
@@ -188,9 +187,17 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     @http = http.createServer(app)
 
   listen: ->
-    @proxy.listen {
+    prox_opt = {
       port: @opt.proxy_port
     }
+
+    # support another proxy between requests
+    if @opt.proxy
+      prox_opt.httpAgent = new require('proxy-agent')(@opt.proxy)
+      prox_opt.httpsAgent = new require('proxy-agent')(@opt.proxy)
+
+    @proxy.listen prox_opt
+
     @http.listen @opt.port
     @emit 'proxy_listening', @opt
 
@@ -200,8 +207,8 @@ module.exports = class Proxy extends (require('events').EventEmitter)
     derp.listen 0 ,=>
       port = derp.address().port
       derp.close()
-      return cb null, port 
-  
+      return cb null, port
+
 ###
 if !module.parent
   p = new Proxy {

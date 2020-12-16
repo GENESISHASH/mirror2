@@ -4,8 +4,8 @@ mirror = require('./../');
 
 server = new mirror.ProxyManager({
   hosts: {
-    'localhost': {
-      host: 'crowdsale.storiqa.com',
+    'local.shimlar.com': {
+      host: 'game.shimlar.com',
       enable_ssl: true,
       silent: false,
       html_modifiers: [
@@ -14,16 +14,6 @@ server = new mirror.ProxyManager({
         })
       ]
     },
-    'greatist.com': {
-      host: 'papergangster.com',
-      enable_ssl: true,
-      silent: true,
-      html_modifiers: [
-        (function(x) {
-          return x.replace('<title>','<title>lol dongs ');
-        })
-      ]
-    }
   }
 });
 
