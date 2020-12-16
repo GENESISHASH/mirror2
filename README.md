@@ -1,7 +1,7 @@
 <img src="https://taky.s3.amazonaws.com/31gm6glfzxkf.svg" height="225">
 
-# mirror-mirror
-`mirror-mirror` is designed to reverse proxy and "mitm" modify remote hosts. it
+# mirror2
+`mirror2` is designed to reverse proxy and "mitm" modify remote hosts. it
 supports custom connect middlewares at both the routing-level and the
 individual host level as well as sync string transforms and harmon select
 modifiers.
@@ -11,8 +11,8 @@ _magic mirror on the wall, who is the fairest one of all?_
 # quick start
 
 ```
-git clone https://github.com/punted/mirror-mirror
-cd mirror-mirror
+git clone https://github.com/tosadvisor/mirror2
+cd mirror2
 npm i
 node usage.js
 ```
@@ -28,7 +28,7 @@ open browser to `http://localhost:7777`
 ``` javascript
 var mirror, server;
 
-mirror = require('./');
+mirror = require('mirror2');
 
 server = new mirror.ProxyManager({
   hosts: {
@@ -44,7 +44,7 @@ server = new mirror.ProxyManager({
       // synchronous source modifiers for text/html
       html_modifiers: [
         (function(x) {
-          return x.replace('<title>', '<title>(mirror-mirror) ');
+          return x.replace('<title>', '<title>(mirror2) ');
         })
       ]
     },
@@ -58,7 +58,7 @@ server = new mirror.ProxyManager({
 
       html_modifiers: [
         (function(x) {
-          return x.replace('<title>', '<title>(mirror-mirror) ');
+          return x.replace('<title>', '<title>(mirror2) ');
         })
       ]
     }
